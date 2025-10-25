@@ -1,0 +1,54 @@
+# ==========================
+# macOS system files
+# ==========================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ==========================
+# IntelliJ IDEA / JetBrains
+# ==========================
+.idea/
+*.iml
+out/
+workspace.xml
+tasks.xml
+shelf/
+dataSources/
+dataSources.local.xml
+httpRequests/
+target/
+
+# ==========================
+# Docker
+# ==========================
+# Avoid local build artifacts and env files
+*.log
+*.pid
+*.seed
+*.pid.lock
+.env
+
+# ==========================
+# System folders / temp
+# ==========================
+*.tmp
+*.swp
+*.bak
+*.orig
+*.old
+*~
+Thumbs.db
+ehthumbs.db
+
+# ==========================
+# Node / npm (if you add scripts later)
+# ==========================
+node_modules/
+
+# ==========================
+# Python / venv (if used for scripts)
+# ==========================
+venv/
+__pycache__/
+*.py[cod]
