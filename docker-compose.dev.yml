@@ -1,6 +1,6 @@
 services:
   auth-service:
-    image: ghcr.io/ing-sist/auth-service:dev
+    image: ghcr.io/ing-sist/auth-service:dev-latest
     networks:
       - snippet-search-net
     ports:
@@ -8,7 +8,7 @@ services:
 
 
   engine-service:
-    image: ghcr.io/ing-sist/engine-service:dev
+    image: ghcr.io/ing-sist/engine-service:dev-latest
     networks:
       - snippet-search-net
     ports:
@@ -16,7 +16,7 @@ services:
 
 
   snippet-service:
-    image: ghcr.io/ing-sist/snippet-service:dev
+    image: ghcr.io/ing-sist/snippet-service:dev-latest
     networks:
       - snippet-search-net
     ports:

@@ -1,0 +1,44 @@
+name: Deploy to Azure VMs
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  deploy-dev:
+    if: github.ref_name != 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to DEV VM
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.AZURE_VM_DEV_IP }}
+          username: snippetdevuser
+          key: ${{ secrets.AZURE_VM_DEV_SSH_KEY }}
+          script: |
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            cd ~/infra
+            docker-compose pull
+            docker-compose up -d
+
+  deploy-prod:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to PROD VM
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.AZURE_VM_PROD_IP }}
+          username: snippetproduser
+          key: ${{ secrets.AZURE_VM_PROD_SSH_KEY }}
+          script: |
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            cd ~/infra
+            docker-compose pull
+            docker-compose up -d
