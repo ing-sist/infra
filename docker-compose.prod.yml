@@ -1,9 +1,90 @@
 services:
-  auth-service:
-    image: ghcr.io/ing-sist/auth-service:prod
 
-  engine-service:
-    image: ghcr.io/ing-sist/engine-service:prod
+  # NGINX REVERSE PROXY
+  nginx-proxy:
+    image: nginx:latest
+    container_name: nginx-proxy-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.prod.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    restart: unless-stopped
+    depends_on:
+      - auth-api-main
+      - engine-api-main
+      - snippet-api-main
 
-  snippet-service:
-    image: ghcr.io/ing-sist/snippet-service:prod
+  ## PROD enviroment
+  auth-api-main:
+    image: ghcr.io/ing-sist/auth-api-main:latest
+    container_name: auth-api-main
+    env_file:
+      -  .env
+    expose:
+      - 8080
+    depends_on:
+      auth-postgres-db-main:
+        condition: service_healthy
+  auth-postgres-db-main:
+    image: ghcr.io/ing-sist/auth-postgres-db-main
+    container_name: auth-postgres-db-main
+    expose:
+      - 5432
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  engine-api-main:
+    image: ghcr.io/ing-sist/engine-api-main:latest
+    container_name: engine-api-main
+    env_file:
+      - .env
+    expose:
+      - 8081
+    depends_on:
+      engine-postgres-db-main:
+        condition: service_healthy
+  engine-postgres-db-main:
+    image: ghcr.io/ing-sist/engine-postgres-db-main
+    container_name: engine-postgres-db-main
+    expose:
+      - 5432
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  snippet-api-main:
+    image: ghcr.io/ing-sist/snippet-api-main:latest
+    container_name: snippet-api-main
+    env_file:
+      - .env
+    expose:
+      - 8082
+    depends_on:
+      snippet-postgres-db-main:
+        condition: service_healthy
+  snippet-postgres-db-main:
+    image: ghcr.io/ing-sist/snippet-postgres-db-main
+    container_name: snippet-postgres-db-main
+    expose:
+      - 5432
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
