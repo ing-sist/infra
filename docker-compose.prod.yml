@@ -15,6 +15,7 @@ services:
       - auth-api-main
       - engine-api-main
       - snippet-api-main
+      - printscript-ui-main
 
   ## PROD enviroment
   auth-api-main:
@@ -87,4 +88,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+
+  printscript-ui-main:
+    image: ghcr.io/ing-sist/printscript-ui-main:latest
+    container_name: printscript-ui-main
+    expose:
+      - 80
     restart: unless-stopped
