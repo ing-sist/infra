@@ -28,6 +28,8 @@ target/
 *.seed
 *.pid.lock
 .env
+.env.dev
+.env.prod
 
 # ==========================
 # System folders / temp
