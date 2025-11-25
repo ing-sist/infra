@@ -61,12 +61,14 @@ services:
         condition: service_healthy
 
   auth-service-db-dev:
-    image: ghcr.io/ing-sist/auth-service-db-dev
+    image: postgres:17.6-alpine
     container_name: auth-service-db-dev
     expose:
       - 5432
     env_file:
       - .env
+    volumes:
+      - auth_data_dev:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -87,12 +89,14 @@ services:
         condition: service_healthy
 
   snippet-service-db-dev:
-    image: ghcr.io/ing-sist/snippet-service-db-dev
+    image: postgres:17.6-alpine
     container_name: snippet-service-db-dev
     expose:
       - 5432
     env_file:
       - .env
+    volumes:
+      - snippet_data_dev:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -114,3 +118,7 @@ services:
     expose:
       - 80
     restart: unless-stopped
+
+volumes:
+  auth_data_dev:
+  snippet_data_dev:
