@@ -99,3 +99,12 @@ services:
     expose:
       - 80
     restart: unless-stopped
+
+  asset-service:
+    container_name: asset_service_dev
+    image: ghcr.io/austral-ingsis/snippet-asset-service:latest
+    environment:
+      NEW_RELIC_AGENT_ENABLED: false
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
