@@ -119,6 +119,20 @@ services:
       - 80
     restart: unless-stopped
 
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    ports:
+      - "10000:10000"
+
+  asset-service:
+    container_name: asset_service_dev
+    image: ghcr.io/austral-ingsis/snippet-asset-service:latest
+    environment:
+      AZURE_HOST: "http://azurite"
+      NEW_RELIC_AGENT_ENABLED: false
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
 volumes:
   auth_data_dev:
   snippet_data_dev:
