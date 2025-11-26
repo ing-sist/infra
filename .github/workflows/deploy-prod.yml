@@ -1,0 +1,35 @@
+name: Deploy Infra Prod
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy main via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SNIPPET_VM_PROD_IP }}
+          username: ${{ secrets.SNIPPET_VM_PROD_USER }}
+          key: ${{ secrets.SNIPPET_VM_PROD_SSH_KEY }}
+          script: |
+            # 1. Navegar a la carpeta del repo
+            cd infra
+            
+            # 2. Asegurarnos de estar en la rama correcta
+            git fetch origin
+            git checkout main
+            git pull origin main
+            
+            # 3. Bajar los contenedores viejos
+            docker-compose -f docker-compose.prod.yml down 
+            
+            # 4. Levantar todo actualizado        
+            docker-compose -f docker-compose.prod.yml up -d --build
+            
+            # 5. Limpiar imágenes viejas para no llenar el disco
+            docker image prune -f
+

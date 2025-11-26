@@ -1,6 +1,7 @@
 services:
 
   # NGINX REVERSE PROXY
+
   nginx-proxy:
     image: nginx:latest
     container_name: nginx-proxy-dev
@@ -9,36 +10,65 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      # Monta el archivo de config de Nginx
-      - ./nginx.dev.conf:/etc/nginx/conf.d/default.conf
-      # Monta los certificados SSL (solo lectura)
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      # 1. Monta el archivo de config de Nginx
+      - ./nginx.conf/server.dev.conf:/etc/nginx/conf.d/default.conf:ro
+      # 2. Certificados SSL (Solo lectura)
+      - ./certbot/conf:/etc/letsencrypt:ro
+      # 3. Desafío Webroot (Solo lectura)
+      - ./certbot/www:/var/www/certbot:ro
     restart: unless-stopped
     depends_on:
-      - auth-api-dev
-      - engine-api-dev
-      - snippet-api-dev
+      - auth-service-dev
+      - engine-service-dev
+      - snippet-service-dev
       - printscript-ui-dev
 
-  ## DEV enviroment
-  auth-api-dev:
-    image: ghcr.io/ing-sist/auth-api-dev:latest
-    container_name: auth-api-dev
+  # === CERTBOT (Generador SSL) ===
+  # Se encarga de crear y renovar los certificados automáticamente
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot-dev
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --email ${CERTBOT_EMAIL} -d ${DUCKDNS_SUBDOMAIN_DEV}.duckdns.org --agree-tos --no-eff-email --keep-until-expiring
+
+  # === DUCKDNS (DEV) ===
+
+  duckdns:
+    image: lscr.io/linuxserver/duckdns:latest
+    container_name: duckdns
+    environment:
+      - PUID=1000 # ID usuario estandar linux
+      - PGID=1000 # ID grupo estandar linux
+      - TZ=${TZ}
+      - SUBDOMAINS=${DUCKDNS_SUBDOMAIN_DEV}
+      - TOKEN=${DUCKDNS_TOKEN}
+    restart: unless-stopped
+
+  # === MICROSERVICIOS Y BASES DE DATOS ===
+
+  auth-service-dev:
+    image: ghcr.io/ing-sist/auth-service:dev-latest
+    container_name: auth-service-dev
     env_file:
       -  .env
     expose:
       - 8080
     depends_on:
-      auth-postgres-db-dev:
+      auth-service-db-dev:
         condition: service_healthy
 
-  auth-postgres-db-dev:
-    image: ghcr.io/ing-sist/auth-postgres-db-dev
-    container_name: auth-postgres-db-dev
+  auth-service-db-dev:
+    image: postgres:17.6-alpine
+    container_name: auth-service-db-dev
     expose:
       - 5432
     env_file:
       - .env
+    volumes:
+      - auth_data_dev:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -46,46 +76,27 @@ services:
       retries: 5
     restart: unless-stopped
 
-  engine-api-dev:
-    image: ghcr.io/ing-sist/engine-api-dev:latest
-    container_name: engine-api-dev
-    env_file:
-      - .env
-    expose:
-      - 8081
-    depends_on:
-      engine-postgres-db-dev:
-        condition: service_healthy
-  engine-postgres-db-dev:
-    image: ghcr.io/ing-sist/engine-postgres-db-dev
-    container_name: engine-postgres-db-dev
-    expose:
-      - 5432
-    env_file:
-      - .env
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-  snippet-api-dev:
-    image: ghcr.io/ing-sist/snippet-api-dev:latest
-    container_name: snippet-api-dev
+
+  snippet-service-dev:
+    image: ghcr.io/ing-sist/snippet-service:dev-latest
+    container_name: snippet-service-dev
     env_file:
       - .env
     expose:
       - 8082
     depends_on:
-      snippet-postgres-db-dev:
+      snippet-service-db-dev:
         condition: service_healthy
-  snippet-postgres-db-dev:
-    image: ghcr.io/ing-sist/snippet-postgres-db-dev
-    container_name: snippet-postgres-db-dev
+
+  snippet-service-db-dev:
+    image: postgres:17.6-alpine
+    container_name: snippet-service-db-dev
     expose:
       - 5432
     env_file:
       - .env
+    volumes:
+      - snippet_data_dev:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -93,8 +104,16 @@ services:
       retries: 5
     restart: unless-stopped
 
+  engine-service-dev:
+    image: ghcr.io/ing-sist/engine-service:dev-latest
+    container_name: engine-service-dev
+    env_file:
+      - .env
+    expose:
+      - 8081
+
   printscript-ui-dev:
-    image: ghcr.io/ing-sist/printscript-ui-dev:latest
+    image: ghcr.io/ing-sist/printscript-ui:dev-latest
     container_name: printscript-ui-dev
     expose:
       - 80
@@ -114,3 +133,6 @@ services:
     ports:
       - "8080:8080"
     restart: unless-stopped
+volumes:
+  auth_data_dev:
+  snippet_data_dev:
