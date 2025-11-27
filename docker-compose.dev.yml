@@ -133,6 +133,19 @@ services:
     ports:
       - "8080:8080"
     restart: unless-stopped
+
+
+  redis-dev:
+    container_name: event-bus
+    image: redis:6-alpine
+    command: redis-server --appendonly yes # guardar cada operacion en disco
+    volumes:
+      - redis_data_dev:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
 volumes:
   auth_data_dev:
   snippet_data_dev:
+  redis_data_dev:
