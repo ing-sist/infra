@@ -23,19 +23,6 @@ services:
       - snippet-service-dev
       - printscript-ui-dev
 
-  # === CERTBOT (Generador SSL) ===
-  # Se encarga de crear y renovar los certificados automáticamente
-
-  certbot:
-    image: certbot/certbot
-    container_name: certbot-dev
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    entrypoint: /bin/sh
-    command: -c "if [ -f /etc/letsencrypt/live/${DUCKDNS_SUBDOMAIN_DEV}.duckdns.org/fullchain.pem ]; then certbot renew --webroot -w /var/www/certbot --quiet; else certbot certonly --webroot -w /var/www/certbot --email ${CERTBOT_EMAIL} -d ${DUCKDNS_SUBDOMAIN_DEV}.duckdns.org --agree-tos --no-eff-email; fi"
-    depends_on:
-      - nginx-proxy
 
   # === DUCKDNS (DEV) ===
 
@@ -49,6 +36,20 @@ services:
       - SUBDOMAINS=${DUCKDNS_SUBDOMAIN_DEV}
       - TOKEN=${DUCKDNS_TOKEN}
     restart: unless-stopped
+
+  # === CERTBOT (Generador SSL) ===
+  # Se encarga de crear y renovar los certificados automáticamente
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot-dev
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: /bin/sh
+    command: -c "if [ -f /etc/letsencrypt/live/${DUCKDNS_SUBDOMAIN_DEV}.duckdns.org/fullchain.pem ]; then certbot renew --webroot -w /var/www/certbot --quiet; else certbot certonly --webroot -w /var/www/certbot --email ${CERTBOT_EMAIL} -d ${DUCKDNS_SUBDOMAIN_DEV}.duckdns.org --agree-tos --no-eff-email; fi"
+    depends_on:
+      - nginx-proxy
 
   # === MICROSERVICIOS Y BASES DE DATOS ===
 
