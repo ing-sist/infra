@@ -11,7 +11,7 @@ services:
       - "443:443"
     volumes:
       # 1. Monta el archivo de config de Nginx
-      - ./nginx.conf/server.dev.conf:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf/server.dev.conf:ro
       # 2. Certificados SSL (Solo lectura)
       - ./certbot/conf:/etc/letsencrypt:ro
       # 3. Desafío Webroot (Solo lectura)
