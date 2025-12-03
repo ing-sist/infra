@@ -54,6 +54,10 @@ services:
     container_name: auth-service-dev
     env_file:
       -  .env
+    environment:
+      DATABASE_URL: ${AUTH_DATABASE_URL}
+      DATABASE_USERNAME: ${AUTH_DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${AUTH_DATABASE_PASSWORD}
     expose:
       - 8080
     depends_on:
@@ -69,6 +73,10 @@ services:
       - .env
     volumes:
       - auth_data_dev:/var/lib/postgresql/data
+    environment:
+      DATABASE_URL: ${AUTH_DATABASE_URL}
+      DATABASE_USERNAME: ${AUTH_DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${AUTH_DATABASE_PASSWORD}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -82,6 +90,10 @@ services:
     container_name: snippet-service-dev
     env_file:
       - .env
+    environment:
+      DATABASE_URL: ${SNIPPET_DATABASE_URL}
+      DATABASE_USERNAME: ${SNIPPET_DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${SNIPPET_DATABASE_PASSWORD}
     expose:
       - 8082
     depends_on:
@@ -95,6 +107,10 @@ services:
       - 5432
     env_file:
       - .env
+    environment:
+      DATABASE_URL: ${SNIPPET_DATABASE_URL}
+      DATABASE_USERNAME: ${SNIPPET_DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${SNIPPET_DATABASE_PASSWORD}
     volumes:
       - snippet_data_dev:/var/lib/postgresql/data
     healthcheck:
