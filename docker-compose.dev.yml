@@ -129,7 +129,7 @@ services:
     image: ghcr.io/austral-ingsis/snippet-asset-service:latest
     environment:
       AZURE_HOST: "http://azurite"
-      NEW_RELIC_AGENT_ENABLED: false
+      NEW_RELIC_AGENT_ENABLED: "false"
     ports:
       - "8080:8080"
     restart: unless-stopped
