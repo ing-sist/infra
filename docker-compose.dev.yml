@@ -55,7 +55,7 @@ services:
     env_file:
       -  .env
     expose:
-      - 8080
+      - 8084
     depends_on:
       auth-service-db-dev:
         condition: service_healthy
