@@ -30,6 +30,7 @@ target/
 .env
 .env.dev
 .env.prod
+.env.local
 
 # ==========================
 # System folders / temp

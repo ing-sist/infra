@@ -1,0 +1,132 @@
+services:
+
+  # NGINX REVERSE PROXY (HTTP only for local)
+  nginx-proxy-local:
+    image: nginx:latest
+    container_name: nginx-proxy-local
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf/server.local.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - auth-service-local
+      - engine-service-local
+      - snippet-service-local
+      - printscript-ui-local
+
+  auth-service-local:
+    image: ghcr.io/ing-sist/auth-service:dev-latest
+    container_name: auth-service-local
+    env_file:
+      - .env.local
+    environment:
+      POSTGRES_DB: ${AUTH_DATABASE_URL}
+      POSTGRES_USER: ${AUTH_DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${AUTH_DATABASE_PASSWORD}
+    ports:
+      - "8084:8084"
+    depends_on:
+      auth-service-db-local:
+        condition: service_healthy
+
+  auth-service-db-local:
+    image: postgres:17.6-alpine
+    container_name: auth-service-db-local
+    ports:
+      - "5434:5432"
+    env_file:
+      - .env.local
+    environment:
+      POSTGRES_DB: ${AUTH_DATABASE_URL}
+      POSTGRES_USER: ${AUTH_DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${AUTH_DATABASE_PASSWORD}
+    volumes:
+      - auth_data_local:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+
+  snippet-service-local:
+    image: ghcr.io/ing-sist/snippet-service:dev-latest
+    container_name: snippet-service-local
+    env_file:
+      - .env.local
+    environment:
+      POSTGRES_DB: ${SNIPPET_DATABASE_URL}
+      POSTGRES_USER: ${SNIPPET_DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${SNIPPET_DATABASE_PASSWORD}
+    ports:
+      - "8082:8082"
+    depends_on:
+      snippet-service-db-local:
+        condition: service_healthy
+
+  snippet-service-db-local:
+    image: postgres:17.6-alpine
+    container_name: snippet-service-db-local
+    ports:
+      - "5433:5432"
+    env_file:
+      - .env.local
+    environment:
+      POSTGRES_DB: ${SNIPPET_DATABASE_URL}
+      POSTGRES_USER: ${SNIPPET_DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${SNIPPET_DATABASE_PASSWORD}
+    volumes:
+      - snippet_data_local:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  engine-service-local:
+    image: ghcr.io/ing-sist/engine-service:dev-latest
+    container_name: engine-service-local
+    env_file:
+      - .env.local
+    ports:
+      - "8081:8081"
+
+  printscript-ui-local:
+    image: ghcr.io/ing-sist/printscript-ui-dev:latest
+    container_name: printscript-ui-local
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+  azurite-local:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: azurite-local
+    ports:
+      - "10000:10000"
+
+  asset-service-local:
+    container_name: asset-service-local
+    image: ghcr.io/austral-ingsis/snippet-asset-service:latest
+    environment:
+      AZURE_HOST: "http://azurite-local:10000"
+      NEW_RELIC_AGENT_ENABLED: "false"
+    ports:
+      - "8090:8080"
+    restart: unless-stopped
+
+  redis-local:
+    container_name: event-bus-local
+    image: redis:6-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data_local:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  auth_data_local:
+  snippet_data_local:
+  redis_data_local:
