@@ -90,7 +90,7 @@ services:
 
 
   snippet-service-dev:
-    image: ghcr.io/ing-sist/snippet-service:dev-latest
+    image: ghcr.io/ing-sist/snippet-service:newrelic-test
     container_name: snippet-service-dev
     env_file:
       - .env
