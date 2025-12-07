@@ -98,6 +98,11 @@ services:
       POSTGRES_DB: ${SNIPPET_DATABASE_URL}
       POSTGRES_USER: ${SNIPPET_DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${SNIPPET_DATABASE_PASSWORD}
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_ENVIRONMENT: development
+#      NEW_RELIC_APP_NAME: "Snippet Service (Development)"
+    ports:
+      - "8082:8082"
     expose:
       - 8082
     depends_on:
