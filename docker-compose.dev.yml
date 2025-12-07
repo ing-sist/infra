@@ -136,10 +136,14 @@ services:
     restart: unless-stopped
 
   engine-service-dev:
-    image: ghcr.io/ing-sist/engine-service:dev-latest
+#    image: ghcr.io/ing-sist/engine-service:dev-latest
+    image: ghcr.io/ing-sist/engine-service:newrelic-test
     container_name: engine-service-dev
     env_file:
       - .env
+    environment:
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_ENVIRONMENT: development
     expose:
       - 8081
 
