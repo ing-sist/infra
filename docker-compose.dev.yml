@@ -100,6 +100,10 @@ services:
       DB_HOST: ${SNIPPET_DB_HOST}
       DB_PORT: ${SNIPPET_DB_PORT}
       POSTGRES_PASSWORD: ${SNIPPET_DATABASE_PASSWORD}
+
+      SPRING_REDIS_HOST: redis-dev
+      SPRING_REDIS_PORT: 6379
+
       NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
       NEW_RELIC_ENVIRONMENT: development
 #      NEW_RELIC_APP_NAME: "Snippet Service (Development)"
@@ -110,6 +114,8 @@ services:
     depends_on:
       snippet-service-db-dev:
         condition: service_healthy
+      redis-dev:
+        condition: service_started
 
   snippet-service-db-dev:
     image: postgres:17.6-alpine
