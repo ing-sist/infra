@@ -90,7 +90,8 @@ services:
 
 
   snippet-service-dev:
-    image: ghcr.io/ing-sist/snippet-service:newrelic-test
+    image : ghcr.io/ing-sist/snippet-service:dev-latest
+#    image: ghcr.io/ing-sist/snippet-service:newrelic-test
     container_name: snippet-service-dev
     env_file:
       - .env
@@ -101,14 +102,13 @@ services:
       DB_PORT: ${SNIPPET_DB_PORT}
       POSTGRES_PASSWORD: ${SNIPPET_DATABASE_PASSWORD}
 
-      REDIS_HOST: redis-dev
-      REDIS_PORT: 6379
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
 
       NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
       NEW_RELIC_ENVIRONMENT: development
-#      NEW_RELIC_APP_NAME: "Snippet Service (Development)"
-    ports:
-      - "8082:8082"
+#    ports:
+#      - "8082:8082"
     expose:
       - 8082
     depends_on:
