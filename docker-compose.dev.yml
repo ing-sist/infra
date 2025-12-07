@@ -55,6 +55,7 @@ services:
 
   auth-service-dev:
     image: ghcr.io/ing-sist/auth-service:dev-latest
+#    image: ghcr.io/ing-sist/auth-service:newrelic-test
     container_name: auth-service-dev
     env_file:
       -  .env
@@ -62,6 +63,12 @@ services:
       POSTGRES_DB: ${AUTH_DATABASE_URL}
       POSTGRES_USER: ${AUTH_DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${AUTH_DATABASE_PASSWORD}
+
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_AGENT_ENABLED: ${NEW_RELIC_AGENT_ENABLED}
+      NEW_RELIC_ENVIRONMENT: development
+#    ports:
+#      - "8084:8084"
     expose:
       - 8084
     depends_on:
@@ -90,14 +97,26 @@ services:
 
 
   snippet-service-dev:
-    image: ghcr.io/ing-sist/snippet-service:dev-latest
+    image : ghcr.io/ing-sist/snippet-service:dev-latest
+#    image: ghcr.io/ing-sist/snippet-service:newrelic-test
     container_name: snippet-service-dev
     env_file:
       - .env
     environment:
       POSTGRES_DB: ${SNIPPET_DATABASE_URL}
       POSTGRES_USER: ${SNIPPET_DATABASE_USERNAME}
+      DB_HOST: ${SNIPPET_DB_HOST}
+      DB_PORT: ${SNIPPET_DB_PORT}
       POSTGRES_PASSWORD: ${SNIPPET_DATABASE_PASSWORD}
+
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_AGENT_ENABLED: ${NEW_RELIC_AGENT_ENABLED}
+      NEW_RELIC_ENVIRONMENT: development
+#    ports:
+#      - "8082:8082"
     expose:
       - 8082
     depends_on:
@@ -126,9 +145,22 @@ services:
 
   engine-service-dev:
     image: ghcr.io/ing-sist/engine-service:dev-latest
+#    image: ghcr.io/ing-sist/engine-service:newrelic-test
     container_name: engine-service-dev
     env_file:
       - .env
+    environment:
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_AGENT_ENABLED: ${NEW_RELIC_AGENT_ENABLED}
+      NEW_RELIC_ENVIRONMENT: development
+
+      AUTH0_ISSUER_URI: ${AUTH0_ISSUER_URI}
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+      AUTH0_M2M_CLIENT_ID: ${AUTH0_M2M_CLIENT_ID}
+      AUTH0_M2M_CLIENT_SECRET: ${AUTH0_M2M_CLIENT_SECRET}
+      AUTH0_M2M_AUDIENCE: ${AUTH0_M2M_AUDIENCE}
+#    ports:
+#      - "8081:8081"
     expose:
       - 8081
 
