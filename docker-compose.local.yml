@@ -3,6 +3,7 @@ services:
   # NGINX REVERSE PROXY (HTTP only for local)
   nginx-proxy-local:
     image: nginx:latest
+    pull_policy: always
     container_name: nginx-proxy-local
     ports:
       - "8080:80"
@@ -16,6 +17,7 @@ services:
 
   auth-service-local:
     image: ghcr.io/ing-sist/auth-service:dev-latest
+    pull_policy: always
     container_name: auth-service-local
     env_file:
       - .env.local
@@ -51,15 +53,22 @@ services:
 
 
   snippet-service-local:
-    image: ghcr.io/ing-sist/snippet-service:dev-latest
-    platform: linux/arm64
+    #image: ghcr.io/ing-sist/snippet-service:dev-latest
+    build:
+      context: ../snippet-service  # La ruta relativa a tu carpeta de código
+      dockerfile: Dockerfile
+    pull_policy: always
     container_name: snippet-service-local
+    platform: linux/amd64
     env_file:
       - .env.local
     environment:
+      DB_HOST: ${SNIPPET_DB_HOST}
+      DB_NAME: ${SNIPPET_DATABASE_URL}
+      DB_USER: ${SNIPPET_DATABASE_USERNAME}
+      DB_PASSWORD: ${SNIPPET_DATABASE_PASSWORD}
       POSTGRES_DB: ${SNIPPET_DATABASE_URL}
-      POSTGRES_USER: ${SNIPPET_DATABASE_USERNAME}
-      POSTGRES_PASSWORD: ${SNIPPET_DATABASE_PASSWORD}
+
     ports:
       - "8082:8082"
     depends_on:
@@ -88,7 +97,9 @@ services:
 
   engine-service-local:
     image: ghcr.io/ing-sist/engine-service:dev-latest
+    pull_policy: always
     container_name: engine-service-local
+    platform: linux/amd64
     env_file:
       - .env.local
     ports:
@@ -96,6 +107,7 @@ services:
 
   printscript-ui-local:
     image: ghcr.io/ing-sist/printscript-ui-dev:latest
+    pull_policy: always
     container_name: printscript-ui-local
     ports:
       - "3000:80"
@@ -103,6 +115,7 @@ services:
 
   azurite-local:
     image: mcr.microsoft.com/azure-storage/azurite
+    pull_policy: always
     container_name: azurite-local
     ports:
       - "10000:10000"
@@ -110,8 +123,9 @@ services:
   asset-service-local:
     container_name: asset-service-local
     image: ghcr.io/austral-ingsis/snippet-asset-service:latest
+    pull_policy: always
     environment:
-      AZURE_HOST: "http://azurite-local:10000"
+      AZURE_HOST: "http://azurite-local"
       NEW_RELIC_AGENT_ENABLED: "false"
     ports:
       - "8090:8080"
@@ -120,6 +134,7 @@ services:
   redis-local:
     container_name: event-bus-local
     image: redis:6-alpine
+    pull_policy: always
     command: redis-server --appendonly yes
     volumes:
       - redis_data_local:/data
@@ -131,3 +146,7 @@ volumes:
   auth_data_local:
   snippet_data_local:
   redis_data_local:
+
+networks:
+  default:
+    name: infra_default
