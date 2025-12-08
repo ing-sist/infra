@@ -52,6 +52,7 @@ services:
 
   snippet-service-local:
     image: ghcr.io/ing-sist/snippet-service:dev-latest
+    platform: linux/arm64
     container_name: snippet-service-local
     env_file:
       - .env.local
