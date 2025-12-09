@@ -167,13 +167,14 @@ services:
   printscript-ui-dev:
     image: ghcr.io/ing-sist/printscript-ui-dev:latest
     container_name: printscript-ui-dev
+    pull_policy: always
     env_file:
       - .env
     environment:
       # --- AUTH0 CONFIG ---
-      AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
-      AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
-      AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
+      VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
+      VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
+      VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
 
       VITE_FRONTEND_URL: ${VITE_FRONTEND_URL}
       VITE_BACKEND_URL: ${VITE_BACKEND_URL}
