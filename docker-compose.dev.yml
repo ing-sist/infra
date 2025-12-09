@@ -23,7 +23,6 @@ services:
       - snippet-service-dev
       - printscript-ui-dev
 
-
   # === DUCKDNS (DEV) ===
 
   duckdns:
