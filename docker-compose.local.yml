@@ -53,10 +53,10 @@ services:
 
 
   snippet-service-local:
-    #image: ghcr.io/ing-sist/snippet-service:dev-latest
-    build:
-      context: ../snippet-service  # La ruta relativa a tu carpeta de código
-      dockerfile: Dockerfile
+    image: ghcr.io/ing-sist/snippet-service:dev-latest
+#    build:
+#      context: ../snippet-service  # La ruta relativa a tu carpeta de código
+#      dockerfile: Dockerfile
     pull_policy: always
     container_name: snippet-service-local
     platform: linux/amd64
@@ -107,6 +107,9 @@ services:
 
   printscript-ui-local:
     image: ghcr.io/ing-sist/printscript-ui-dev:latest
+#    build:
+#      context: ../printscript-ui # La ruta relativa a tu carpeta de código
+#      dockerfile: Dockerfile
     pull_policy: always
     container_name: printscript-ui-local
     ports:
