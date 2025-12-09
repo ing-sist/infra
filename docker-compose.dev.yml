@@ -58,7 +58,7 @@ services:
     pull_policy: always
     container_name: auth-service-dev
     env_file:
-      -  .env
+      - .env
     environment:
       POSTGRES_DB: ${AUTH_DATABASE_URL}
       POSTGRES_USER: ${AUTH_DATABASE_USERNAME}
@@ -125,6 +125,14 @@ services:
     expose:
       - 8082
     depends_on:
+      engine-service-dev:
+        condition: service_completed_successfully
+      asset-service:
+        condition: service_completed_successfully
+      redis-dev:
+        condition: service_completed_successfully
+      auth-service-dev:
+        condition: service_completed_successfully
       snippet-service-db-dev:
         condition: service_healthy
 
