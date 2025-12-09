@@ -169,6 +169,22 @@ services:
     container_name: printscript-ui-dev
     env_file:
       - .env
+    environment:
+      # --- AUTH0 CONFIG ---
+      VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
+      VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
+      VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
+
+      # --- URLs REALES (NO LOCALHOST) ---
+      # La URL donde vive el frontend ahora
+      VITE_FRONTEND_URL: ${VITE_FRONTEND_URL}
+
+      # La URL a donde el frontend debe pedir datos.
+      # Usamos HTTPS y el dominio público, Nginx se encargará de redirigir internamente.
+      VITE_BACKEND_URL: ${VITE_BACKEND_URL}
+
+      # Otras configs
+      VITE_USE_FAKE: "false"
     expose:
       - 80
     restart: unless-stopped
