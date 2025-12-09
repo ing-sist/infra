@@ -126,13 +126,13 @@ services:
       - 8082
     depends_on:
       engine-service-dev:
-        condition: service_healthy
+        condition: service_started
       asset-service:
-        condition: service_healthy
+        condition: service_started
       redis-dev:
-        condition: service_healthy
+        condition: service_started
       auth-service-dev:
-        condition: service_healthy
+        condition: service_started
       snippet-service-db-dev:
         condition: service_healthy
 
