@@ -4,7 +4,6 @@ services:
 
   nginx-proxy:
     image: nginx:latest
-    pull_policy: always
     container_name: nginx-proxy-dev
     ports:
       # El único que expone puertos a la VM
@@ -29,7 +28,6 @@ services:
 
   duckdns:
     image: lscr.io/linuxserver/duckdns:latest
-    pull_policy: always
     container_name: duckdns
     environment:
       - PUID=1000 # ID usuario estandar linux
@@ -44,7 +42,6 @@ services:
 
   certbot:
     image: certbot/certbot
-    pull_policy: always
     container_name: certbot-dev
     volumes:
       - ./certbot/conf:/etc/letsencrypt
@@ -58,7 +55,6 @@ services:
 
   auth-service-dev:
     image: ghcr.io/ing-sist/auth-service:dev-latest
-    pull_policy: always
 #    image: ghcr.io/ing-sist/auth-service:newrelic-test
     container_name: auth-service-dev
     env_file:
@@ -81,7 +77,6 @@ services:
 
   auth-service-db-dev:
     image: postgres:17.6-alpine
-    pull_policy: always
     container_name: auth-service-db-dev
     expose:
       - 5432
@@ -103,7 +98,6 @@ services:
 
   snippet-service-dev:
     image : ghcr.io/ing-sist/snippet-service:dev-latest
-    pull_policy: always
 #    image: ghcr.io/ing-sist/snippet-service:newrelic-test
     container_name: snippet-service-dev
     env_file:
@@ -131,7 +125,6 @@ services:
 
   snippet-service-db-dev:
     image: postgres:17.6-alpine
-    pull_policy: always
     container_name: snippet-service-db-dev
     expose:
       - 5432
@@ -152,7 +145,6 @@ services:
 
   engine-service-dev:
     image: ghcr.io/ing-sist/engine-service:dev-latest
-    pull_policy: always
 #    image: ghcr.io/ing-sist/engine-service:newrelic-test
     container_name: engine-service-dev
     env_file:
@@ -174,7 +166,6 @@ services:
 
   printscript-ui-dev:
     image: ghcr.io/ing-sist/printscript-ui-dev:latest
-    pull_policy: always
     container_name: printscript-ui-dev
     expose:
       - 80
@@ -182,14 +173,14 @@ services:
 
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
-    pull_policy: always
+
     ports:
       - "10000:10000"
 
   asset-service:
     container_name: asset_service_dev
     image: ghcr.io/austral-ingsis/snippet-asset-service:latest
-    pull_policy: always
+
     environment:
       AZURE_HOST: "http://azurite"
       NEW_RELIC_AGENT_ENABLED: "false"
@@ -201,7 +192,6 @@ services:
   redis-dev:
     container_name: event-bus
     image: redis:6-alpine
-    pull_policy: always
     command: redis-server --appendonly yes # guardar cada operacion en disco
     volumes:
       - redis_data_dev:/data
