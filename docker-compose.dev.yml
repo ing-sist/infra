@@ -167,6 +167,8 @@ services:
   printscript-ui-dev:
     image: ghcr.io/ing-sist/printscript-ui-dev:latest
     container_name: printscript-ui-dev
+    env_file:
+      - .env
     expose:
       - 80
     restart: unless-stopped
